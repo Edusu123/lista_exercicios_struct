@@ -85,4 +85,5 @@ int geraMenu(char *nomeJanela, char *titulo, char **opcoes, int quantidadeMenus)
     } while (continuaExecucao);
 
     system("cls");
+    return quantidadeMenus;
 }
