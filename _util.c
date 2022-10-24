@@ -53,6 +53,7 @@ int geraMenu(char *nomeJanela, char *titulo, char **opcoes, int quantidadeMenus)
 
     unsigned char input;
     bool continuaExecucao = true;
+
     do
     {
         int posicaoAnterior = posicaoAtual;

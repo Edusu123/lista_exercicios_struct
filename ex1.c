@@ -1,5 +1,6 @@
 #include <locale.h>
 #include <stdio.h>
+#include <stdbool.h>
 #include <windows.h>
 
 #include "_util.h"
@@ -17,6 +18,7 @@ typedef struct
 } banda;
 
 void cadastro(banda listaBandas[LIMITE_BANDAS], int *indiceInicial);
+void listaPorRanking(banda listaBandas[LIMITE_BANDAS], int quantidadeBandas);
 
 void main()
 {
@@ -35,7 +37,10 @@ void main()
         {
         case 0:
             cadastro(listaBandas, &indiceInicialParaCadastro);
+            break;
         case 1:
+            listaPorRanking(listaBandas, indiceInicialParaCadastro);
+            break;
         case 2:
         case 3:
         default:
@@ -62,12 +67,12 @@ void cadastro(banda listaBandas[LIMITE_BANDAS], int *indiceInicial)
         gotoxy(3, 7);
         printf("Nome da banda: ");
         fflush(stdin);
-        scanf("%s", novaBanda.nomeBanda);
+        fgets(novaBanda.nomeBanda, 100, stdin);
 
         gotoxy(3, 8);
         printf("Tipo de música: ");
         fflush(stdin);
-        scanf("%s", novaBanda.genMusica);
+        fgets(novaBanda.genMusica, 100, stdin);
 
         gotoxy(3, 9);
         printf("Número de integrantes: ");
@@ -80,4 +85,51 @@ void cadastro(banda listaBandas[LIMITE_BANDAS], int *indiceInicial)
         listaBandas[*indiceInicial] = novaBanda;
         (*indiceInicial)++;
     }
+}
+
+void listaPorRanking(banda listaBandas[LIMITE_BANDAS], int quantidadeBandas)
+{
+    int ranking;
+
+    do
+    {
+        system("cls");
+
+        gotoxy(3, 5);
+        printf("Ranking da banda a ser pesquisado: ");
+        scanf("%d", &ranking);
+    } while (ranking < 1 && ranking > 5);
+
+    banda bandaSelecionada;
+    bool selecionado = false;
+
+    for (int i = 0; i < quantidadeBandas; i++)
+    {
+        if (listaBandas[i].posicao == ranking)
+        {
+            selecionado = true;
+            bandaSelecionada = listaBandas[i];
+        }
+    }
+
+    system("cls");
+
+    if (!selecionado)
+    {
+        gotoxy(3, 7);
+        printf("A banda não foi encontrada...");
+        system("pause>NUL");
+        return;
+    }
+
+    gotoxy(3, 5);
+    printf("Banda: %s", bandaSelecionada.nomeBanda);
+
+    gotoxy(3, 6);
+    printf("Gênero musical: %s", bandaSelecionada.genMusica);
+
+    gotoxy(3, 7);
+    printf("Número de integrantes: %d", bandaSelecionada.numeroIntegrantes);
+
+    system("pause>NUL");
 }
