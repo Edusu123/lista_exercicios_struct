@@ -1,6 +1,7 @@
 #include <locale.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <string.h>
 #include <windows.h>
 
 #include "_util.h"
@@ -19,6 +20,7 @@ typedef struct
 
 void cadastro(banda listaBandas[LIMITE_BANDAS], int *indiceInicial);
 void listaPorRanking(banda listaBandas[LIMITE_BANDAS], int quantidadeBandas);
+void buscaPorNome(banda listaBandas[LIMITE_BANDAS], int quantidadeBandas);
 
 void main()
 {
@@ -42,6 +44,8 @@ void main()
             listaPorRanking(listaBandas, indiceInicialParaCadastro);
             break;
         case 2:
+            buscaPorNome(listaBandas, indiceInicialParaCadastro);
+            break;
         case 3:
         default:
             break;
@@ -51,6 +55,7 @@ void main()
 
 void cadastro(banda listaBandas[LIMITE_BANDAS], int *indiceInicial)
 {
+    char end = '\0';
     int qtdBandas;
     gotoxy(3, 5);
     printf("Quantidade de bandas a cadastrar: ");
@@ -68,11 +73,13 @@ void cadastro(banda listaBandas[LIMITE_BANDAS], int *indiceInicial)
         printf("Nome da banda: ");
         fflush(stdin);
         fgets(novaBanda.nomeBanda, 100, stdin);
+        strncat(novaBanda.nomeBanda, &end, 1);
 
         gotoxy(3, 8);
         printf("Tipo de música: ");
         fflush(stdin);
         fgets(novaBanda.genMusica, 100, stdin);
+        strncat(novaBanda.genMusica, &end, 1);
 
         gotoxy(3, 9);
         printf("Número de integrantes: ");
@@ -106,6 +113,49 @@ void listaPorRanking(banda listaBandas[LIMITE_BANDAS], int quantidadeBandas)
     for (int i = 0; i < quantidadeBandas; i++)
     {
         if (listaBandas[i].posicao == ranking)
+        {
+            selecionado = true;
+            bandaSelecionada = listaBandas[i];
+        }
+    }
+
+    system("cls");
+
+    if (!selecionado)
+    {
+        gotoxy(3, 7);
+        printf("A banda não foi encontrada...");
+        system("pause>NUL");
+        return;
+    }
+
+    gotoxy(3, 5);
+    printf("Banda: %s", bandaSelecionada.nomeBanda);
+
+    gotoxy(3, 6);
+    printf("Gênero musical: %s", bandaSelecionada.genMusica);
+
+    gotoxy(3, 7);
+    printf("Número de integrantes: %d", bandaSelecionada.numeroIntegrantes);
+
+    system("pause>NUL");
+}
+
+void buscaPorNome(banda listaBandas[LIMITE_BANDAS], int quantidadeBandas)
+{
+    char nomePesquisa[LIMITE_STRING];
+    bool selecionado = false;
+    banda bandaSelecionada;
+
+    system("cls");
+    gotoxy(3, 5);
+    printf("Insira o nome da banda a buscar: ");
+    fflush(stdin);
+    fgets(nomePesquisa, 100, stdin);
+
+    for (int i = 0; i < quantidadeBandas; i++)
+    {
+        if (strcmp(nomePesquisa, listaBandas[i].nomeBanda) == 0)
         {
             selecionado = true;
             bandaSelecionada = listaBandas[i];
