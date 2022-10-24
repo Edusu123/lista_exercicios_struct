@@ -21,6 +21,7 @@ typedef struct
 void cadastro(banda listaBandas[LIMITE_BANDAS], int *indiceInicial);
 void listaPorRanking(banda listaBandas[LIMITE_BANDAS], int quantidadeBandas);
 void buscaPorNome(banda listaBandas[LIMITE_BANDAS], int quantidadeBandas);
+void verificaRanking(banda listaBandas[LIMITE_BANDAS], int quantidadeBandas);
 
 void main()
 {
@@ -47,6 +48,8 @@ void main()
             buscaPorNome(listaBandas, indiceInicialParaCadastro);
             break;
         case 3:
+            verificaRanking(listaBandas, indiceInicialParaCadastro);
+            break;
         default:
             break;
         }
@@ -180,6 +183,42 @@ void buscaPorNome(banda listaBandas[LIMITE_BANDAS], int quantidadeBandas)
 
     gotoxy(3, 7);
     printf("Número de integrantes: %d", bandaSelecionada.numeroIntegrantes);
+
+    system("pause>NUL");
+}
+
+void verificaRanking(banda listaBandas[LIMITE_BANDAS], int quantidadeBandas)
+{
+    char nomePesquisa[LIMITE_STRING];
+    bool encontrada = false;
+    int pos;
+
+    system("cls");
+
+    gotoxy(3, 5);
+    printf("Insira o nome da banda a buscar: ");
+    fflush(stdin);
+    fgets(nomePesquisa, 100, stdin);
+
+    for (int i = 0; i < quantidadeBandas; i++)
+    {
+        if (strcmp(nomePesquisa, listaBandas[i].nomeBanda) == 0 && listaBandas[i].posicao != 0)
+        {
+            pos = listaBandas[i].posicao;
+            encontrada = true;
+        }
+    }
+
+    gotoxy(3, 7);
+
+    if (encontrada)
+    {
+        printf("A banda está no ranking, na posição %02d", pos);
+    }
+    else
+    {
+        printf("A banda não está no ranking...");
+    }
 
     system("pause>NUL");
 }
