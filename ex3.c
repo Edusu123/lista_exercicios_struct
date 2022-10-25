@@ -15,6 +15,7 @@ typedef struct
 void leituraComplexo();
 void somaComplexo();
 void subtracaoComplexo();
+void multiplicacaoComplexo();
 void leitura(complexo *comp);
 
 void main()
@@ -40,6 +41,8 @@ void main()
         case 2:
             subtracaoComplexo();
             break;
+        case 3:
+            multiplicacaoComplexo();
         default:
             break;
         }
@@ -124,7 +127,7 @@ void subtracaoComplexo()
     system("pause");
 }
 
-void multiplicacaoComplexto()
+void multiplicacaoComplexo()
 {
     complexo comp1, comp2, result;
 
@@ -143,7 +146,7 @@ void multiplicacaoComplexto()
     leitura(&comp2);
 
     result.a = (comp1.a * comp2.a) - (comp1.b * comp2.b);
-    // result.b = (comp1.a * )
+    result.b = (comp1.a * comp2.b) + (comp1.b * comp2.a);
 
     system("cls");
 
