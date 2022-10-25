@@ -49,15 +49,16 @@ int geraMenu(char *nomeJanela, char *titulo, char **opcoes, int quantidadeMenus)
 
     gotoxy(3, posicaoAtual);
     printf(">");
-    system("pause>NUL");
 
     unsigned char input;
     bool continuaExecucao = true;
-
+    fflush(stdin);
     do
     {
         int posicaoAnterior = posicaoAtual;
         input = getch();
+        if (input <= 0)
+            input = getch();
 
         switch (input)
         {
