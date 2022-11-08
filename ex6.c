@@ -1,6 +1,5 @@
 #include <locale.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <windows.h>
 
 #include "_util.h"
@@ -36,7 +35,7 @@ int main(void)
     fgets(numStr, sizeof numStr, stdin);
     data1.dia = atoi(numStr);
     gotoxy(5, 7);
-    printf("mês: ");
+    printf("m?s: ");
     fgets(numStr, sizeof numStr, stdin);
     data1.mes = atoi(numStr);
     gotoxy(5, 8);
@@ -53,7 +52,7 @@ int main(void)
     fgets(numStr, sizeof numStr, stdin);
     data2.dia = atoi(numStr);
     gotoxy(5, 12);
-    printf("mês: ");
+    printf("m?s: ");
     fgets(numStr, sizeof numStr, stdin);
     data2.mes = atoi(numStr);
     gotoxy(5, 13);
@@ -146,6 +145,7 @@ int main(void)
     printf("Quantidade de dias: %d", dias);
     gotoxy(3, 17);
     system("pause");
+    system("cls");
 
     return 0;
 }
