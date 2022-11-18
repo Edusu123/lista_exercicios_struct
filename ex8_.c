@@ -10,7 +10,7 @@
 #define LIMITE_FUNC 100
 #define LIMITE_RG 10
 #define LIMITE_NUM 10
-#define QTD_MENU 4
+#define QTD_MENU 5
 
 typedef struct
 {
@@ -37,9 +37,11 @@ typedef struct
 
 TipoCadastro IniciaCadastro();
 TipoCadastro LeFuncionarios(TipoCadastro atual);
-void ListaFuncionarios(TipoCadastro listagem);
+void ListaFuncionarios(TipoCadastro listagem, const char *nomeTela);
 void OrdenaNome(TipoCadastro listagem);
 void OrdenaSalario(TipoCadastro listagem);
+void InicioSalarioIntervalo(TipoCadastro cadastro);
+void SalarioIntervalo(TipoCadastro cadastro, double v1, double v2);
 void limpaBuffer();
 
 int main(void)
@@ -47,7 +49,7 @@ int main(void)
     TipoCadastro cadastro = IniciaCadastro();
     setlocale(LC_ALL, "Portuguese");
 
-    char *menu[QTD_MENU] = {"Cadastro", "Listagem", "Ordenar por nome", "Ordenar por salário"};
+    char *menu[QTD_MENU] = {"Cadastro", "Listagem", "Ordenar por nome", "Ordenar por salário", "Intervalo de salários"};
     int dec;
 
     // dados para teste//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -108,13 +110,16 @@ int main(void)
             cadastro = LeFuncionarios(cadastro);
             break;
         case 1:
-            ListaFuncionarios(cadastro);
+            ListaFuncionarios(cadastro, "geral");
             break;
         case 2:
             OrdenaNome(cadastro);
             break;
         case 3:
             OrdenaSalario(cadastro);
+            break;
+        case 4:
+            InicioSalarioIntervalo(cadastro);
             break;
         default:
             break;
@@ -158,7 +163,7 @@ TipoCadastro LeFuncionarios(TipoCadastro atual)
         fgets(novoFuncionario.rg, sizeof novoFuncionario.rg, stdin);
 
         gotoxy(3, 9);
-        printf("Salï¿½rio: ");
+        printf("Salário: ");
         limpaBuffer();
         fgets(numStr, sizeof numStr, stdin);
         novoFuncionario.salario = atof(numStr);
@@ -194,7 +199,7 @@ TipoCadastro LeFuncionarios(TipoCadastro atual)
     return atual;
 }
 
-void ListaFuncionarios(TipoCadastro listagem)
+void ListaFuncionarios(TipoCadastro listagem, const char *nomeTela)
 {
     if (listagem.quant == 0)
     {
@@ -208,7 +213,7 @@ void ListaFuncionarios(TipoCadastro listagem)
     }
 
     gotoxy(3, 3);
-    printf("Lista de funcionï¿½rios");
+    printf("Lista de funcionários - %s", nomeTela);
 
     const int colunaNome = 3, colunaRG = 25, colunaSalario = 40, colunaIdade = 55, colunaSexo = 65, colunaDataNascimento = 70;
 
@@ -280,7 +285,7 @@ void OrdenaNome(TipoCadastro listagem)
         }
     }
 
-    ListaFuncionarios(ordenado);
+    ListaFuncionarios(ordenado, "ordenada por nome");
 }
 
 void OrdenaSalario(TipoCadastro listagem)
@@ -306,7 +311,66 @@ void OrdenaSalario(TipoCadastro listagem)
         }
     }
 
-    ListaFuncionarios(ordenado);
+    ListaFuncionarios(ordenado, "ordenada por salário");
+}
+
+void InicioSalarioIntervalo(TipoCadastro cadastro)
+{
+    system("cls");
+
+    gotoxy(3, 3);
+    printf("Intervalo de salários");
+
+    char numStr[LIMITE_NUM];
+    int v1;
+    gotoxy(3, 5);
+    printf("Valor inferior: ");
+    fgets(numStr, sizeof numStr, stdin);
+    v1 = atof(numStr);
+
+    int v2;
+    gotoxy(3, 7);
+    printf("Valor superior: ");
+    fgets(numStr, sizeof numStr, stdin);
+    v2 = atof(numStr);
+
+    SalarioIntervalo(cadastro, v1, v2);
+}
+
+void SalarioIntervalo(TipoCadastro cadastro, double v1, double v2)
+{
+    if (v1 > v2)
+    {
+        double aux = v1;
+        v1 = v2;
+        v2 = v1;
+    }
+
+    TipoCadastro filtrado;
+    filtrado.quant = 0;
+
+    for (int i = 0; i < cadastro.quant; i++)
+    {
+        if (cadastro.funcionarios[i].salario > v1 && cadastro.funcionarios[i].salario < v2)
+        {
+            filtrado.funcionarios[filtrado.quant++] = cadastro.funcionarios[i];
+        }
+    }
+
+    double media, soma = 0;
+
+    for (int i = 0; i < filtrado.quant; i++)
+    {
+        soma += filtrado.funcionarios[i].salario;
+    }
+
+    media = soma / filtrado.quant;
+
+    gotoxy(3, 10);
+    printf("Resultado: R$%.2lf", media);
+
+    gotoxy(3, 28);
+    system("pause");
 }
 
 void limpaBuffer()
