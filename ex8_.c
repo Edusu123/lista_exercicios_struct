@@ -11,7 +11,7 @@
 #define LIMITE_FUNC 100
 #define LIMITE_RG 10
 #define LIMITE_NUM 10
-#define QTD_MENU 6
+#define QTD_MENU 7
 
 typedef struct
 {
@@ -44,6 +44,8 @@ void OrdenaSalario(TipoCadastro listagem);
 void InicioSalarioIntervalo(TipoCadastro cadastro);
 void SalarioIntervalo(TipoCadastro cadastro, double v1, double v2);
 void CalculaImposto(TipoCadastro cadastro);
+void InicioBuscaNome(TipoCadastro cadastro);
+TipoReg BuscaNome(TipoCadastro lista, const char *nome);
 void limpaBuffer();
 
 int main(void)
@@ -51,7 +53,7 @@ int main(void)
     TipoCadastro cadastro = IniciaCadastro();
     setlocale(LC_ALL, "Portuguese");
 
-    char *menu[QTD_MENU] = {"Cadastro", "Listagem", "Ordenar por nome", "Ordenar por salário", "Intervalo de salários", "Cálculo de impostos"};
+    char *menu[QTD_MENU] = {"Cadastro", "Listagem", "Ordenar por nome", "Ordenar por salário", "Intervalo de salários", "Cálculo de impostos", "Busca por nome"};
     int dec;
 
     // dados para teste//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -126,6 +128,9 @@ int main(void)
         case 5:
             CalculaImposto(cadastro);
             break;
+        case 6:
+            InicioBuscaNome(cadastro);
+            break;
         default:
             break;
         }
@@ -157,10 +162,10 @@ TipoCadastro LeFuncionarios(TipoCadastro atual)
         system("cls");
 
         gotoxy(3, 5);
-        printf("Funcionï¿½rio %02d", atual.quant + 1);
+        printf("Funcionário %02d", atual.quant + 1);
 
         gotoxy(3, 7);
-        printf("Nome do funcionï¿½rio: ");
+        printf("Nome do funcionário: ");
         fgets(novoFuncionario.nome, sizeof novoFuncionario.nome, stdin);
 
         gotoxy(3, 8);
@@ -493,6 +498,86 @@ void CalculaImposto(TipoCadastro cadastro)
     system("pause");
 
     return;
+}
+
+void InicioBuscaNome(TipoCadastro cadastro)
+{
+    if (cadastro.quant == 0)
+    {
+        gotoxy(3, 3);
+        printf("Lista vazia...");
+
+        gotoxy(3, 28);
+        system("pause");
+
+        return;
+    }
+
+    gotoxy(3, 3);
+    printf("BUSCA POR NOME");
+
+    char *p;
+    char nome[LIMITE_STRING + 1] = {0};
+    gotoxy(3, 5);
+    printf("Insira o nome que será buscado: ");
+    fgets(nome, LIMITE_STRING, stdin);
+    p = strchr(nome, '\n');
+    if (p)
+        *p = 0;
+
+    TipoReg registro;
+
+    registro = BuscaNome(cadastro, nome);
+
+    if (strcmp(registro.nome, "") == 0)
+    {
+        gotoxy(3, 7);
+        printf("Funcionário não encontrado...");
+
+        gotoxy(3, 28);
+        system("pause");
+
+        return;
+    }
+
+    gotoxy(3, 7);
+    printf("Nome do funcionário: %s", registro.nome);
+
+    gotoxy(3, 8);
+    printf("RG: %s", registro.rg);
+
+    gotoxy(3, 9);
+    printf("Salário: R$%.2lf", registro.salario);
+
+    gotoxy(3, 10);
+    printf("Idade: %d anos", registro.idade);
+
+    gotoxy(3, 11);
+    printf("Gênero: %c", registro.sexo);
+
+    gotoxy(3, 12);
+    printf("%02d/%02d/%04d",
+           registro.dataNascimento.dia,
+           registro.dataNascimento.mes,
+           registro.dataNascimento.ano);
+
+    gotoxy(3, 28);
+    system("pause");
+}
+
+TipoReg BuscaNome(TipoCadastro lista, const char *nome)
+{
+    for (int i = 0; i < lista.quant; i++)
+    {
+        if (strcmp(nome, lista.funcionarios[i].nome) == 0)
+        {
+            return lista.funcionarios[i];
+        }
+    }
+
+    TipoReg vazio;
+    strcpy(vazio.nome, "");
+    return vazio;
 }
 
 void limpaBuffer()
