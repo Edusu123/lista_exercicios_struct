@@ -1,3 +1,4 @@
+#include <conio.h>
 #include <locale.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -10,7 +11,7 @@
 #define LIMITE_FUNC 100
 #define LIMITE_RG 10
 #define LIMITE_NUM 10
-#define QTD_MENU 5
+#define QTD_MENU 6
 
 typedef struct
 {
@@ -42,6 +43,7 @@ void OrdenaNome(TipoCadastro listagem);
 void OrdenaSalario(TipoCadastro listagem);
 void InicioSalarioIntervalo(TipoCadastro cadastro);
 void SalarioIntervalo(TipoCadastro cadastro, double v1, double v2);
+void CalculaImposto(TipoCadastro cadastro);
 void limpaBuffer();
 
 int main(void)
@@ -49,7 +51,7 @@ int main(void)
     TipoCadastro cadastro = IniciaCadastro();
     setlocale(LC_ALL, "Portuguese");
 
-    char *menu[QTD_MENU] = {"Cadastro", "Listagem", "Ordenar por nome", "Ordenar por salário", "Intervalo de salários"};
+    char *menu[QTD_MENU] = {"Cadastro", "Listagem", "Ordenar por nome", "Ordenar por salário", "Intervalo de salários", "Cálculo de impostos"};
     int dec;
 
     // dados para teste//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -121,6 +123,9 @@ int main(void)
         case 4:
             InicioSalarioIntervalo(cadastro);
             break;
+        case 5:
+            CalculaImposto(cadastro);
+            break;
         default:
             break;
         }
@@ -142,7 +147,7 @@ TipoCadastro LeFuncionarios(TipoCadastro atual)
     int qtdFuncionarios;
     cursorVisivel(true);
     gotoxy(3, 5);
-    printf("Quantidade de funcionï¿½rios a serem cadastrados: ");
+    printf("Quantidade de funcionários a serem cadastrados: ");
     fgets(numStr, sizeof numStr, stdin);
     qtdFuncionarios = atoi(numStr);
 
@@ -264,6 +269,17 @@ void ListaFuncionarios(TipoCadastro listagem, const char *nomeTela)
 
 void OrdenaNome(TipoCadastro listagem)
 {
+    if (listagem.quant == 0)
+    {
+        gotoxy(3, 3);
+        printf("Lista vazia...");
+
+        gotoxy(3, 28);
+        system("pause");
+
+        return;
+    }
+
     TipoCadastro ordenado;
     ordenado.quant = listagem.quant;
 
@@ -290,6 +306,17 @@ void OrdenaNome(TipoCadastro listagem)
 
 void OrdenaSalario(TipoCadastro listagem)
 {
+    if (listagem.quant == 0)
+    {
+        gotoxy(3, 3);
+        printf("Lista vazia...");
+
+        gotoxy(3, 28);
+        system("pause");
+
+        return;
+    }
+
     TipoCadastro ordenado;
     ordenado.quant = listagem.quant;
 
@@ -316,6 +343,17 @@ void OrdenaSalario(TipoCadastro listagem)
 
 void InicioSalarioIntervalo(TipoCadastro cadastro)
 {
+    if (cadastro.quant == 0)
+    {
+        gotoxy(3, 3);
+        printf("Lista vazia...");
+
+        gotoxy(3, 28);
+        system("pause");
+
+        return;
+    }
+
     system("cls");
 
     gotoxy(3, 3);
@@ -373,8 +411,93 @@ void SalarioIntervalo(TipoCadastro cadastro, double v1, double v2)
     system("pause");
 }
 
+void CalculaImposto(TipoCadastro cadastro)
+{
+    if (cadastro.quant == 0)
+    {
+        gotoxy(3, 3);
+        printf("Lista vazia...");
+
+        gotoxy(3, 28);
+        system("pause");
+
+        return;
+    }
+
+    gotoxy(3, 3);
+    printf("CÁLCULO DE IMPOSTO");
+
+    char *p;
+    char nome[LIMITE_STRING + 1] = {0};
+    gotoxy(3, 5);
+    printf("Insira o nome que será buscado: ");
+    fgets(nome, LIMITE_STRING, stdin);
+    p = strchr(nome, '\n');
+    if (p)
+        *p = 0;
+
+    TipoReg registro;
+    bool encontrou = false;
+
+    for (int i = 0; i < cadastro.quant; i++)
+    {
+        if (strcmp(cadastro.funcionarios[i].nome, nome) == 0)
+        {
+            registro = cadastro.funcionarios[i];
+            encontrou = true;
+            break;
+        }
+    }
+
+    if (!encontrou)
+    {
+        gotoxy(3, 7);
+        printf("Funcionário não encontrado...");
+
+        gotoxy(3, 28);
+        system("pause");
+
+        return;
+    }
+
+    if (registro.salario < 1000)
+    {
+        gotoxy(3, 7);
+        printf("O valor do salário não prevê pagamento de imposto...");
+
+        gotoxy(3, 28);
+        system("pause");
+
+        return;
+    }
+
+    double valorImposto;
+
+    if (registro.salario < 2000)
+    {
+        valorImposto = registro.salario / 10;
+    }
+    else if (registro.salario < 3500)
+    {
+        valorImposto = (registro.salario / 20) * 3;
+    }
+    else
+    {
+        valorImposto = registro.salario / 4;
+    }
+
+    gotoxy(3, 7);
+    printf("Valor do pagamento: R$%.2lf", valorImposto);
+
+    gotoxy(3, 28);
+    system("pause");
+
+    return;
+}
+
 void limpaBuffer()
 {
-    while (getchar() != '\n')
+    int c = 0;
+    while ((c = getchar()) != '\n' && c != EOF)
         ;
 }
