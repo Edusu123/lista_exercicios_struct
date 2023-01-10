@@ -9,9 +9,9 @@
 
 #define LIMITE_STRING 100
 #define LIMITE_FUNC 100
-#define LIMITE_RG 10
+#define LIMITE_RG 40
 #define LIMITE_NUM 10
-#define QTD_MENU 7
+#define QTD_MENU 8
 
 typedef struct
 {
@@ -46,6 +46,8 @@ void SalarioIntervalo(TipoCadastro cadastro, double v1, double v2);
 void CalculaImposto(TipoCadastro cadastro);
 void InicioBuscaNome(TipoCadastro cadastro);
 TipoReg BuscaNome(TipoCadastro lista, const char *nome);
+double InicioAtualizaSalario(TipoCadastro *cadastro);
+TipoReg BuscaRG(TipoCadastro lista, const char *rg, int *indiceEncontrado);
 void limpaBuffer();
 
 int main(void)
@@ -53,12 +55,12 @@ int main(void)
     TipoCadastro cadastro = IniciaCadastro();
     setlocale(LC_ALL, "Portuguese");
 
-    char *menu[QTD_MENU] = {"Cadastro", "Listagem", "Ordenar por nome", "Ordenar por salário", "Intervalo de salários", "Cálculo de impostos", "Busca por nome"};
+    char *menu[QTD_MENU] = {"Cadastro", "Listagem", "Ordenar por nome", "Ordenar por salário", "Intervalo de salários", "Cálculo de impostos", "Busca por nome", "Atualização de salário"};
     int dec;
 
     // dados para teste//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     strcpy(cadastro.funcionarios[0].nome, "Eduardo");
-    strcpy(cadastro.funcionarios[0].rg, "52.900.680-7");
+    strcpy(cadastro.funcionarios[0].rg, "6807");
     cadastro.funcionarios[0].salario = 12000.0;
     cadastro.funcionarios[0].idade = 19;
     cadastro.funcionarios[0].sexo = 'm';
@@ -131,6 +133,10 @@ int main(void)
         case 6:
             InicioBuscaNome(cadastro);
             break;
+        case 7:
+            double novoSalario = InicioAtualizaSalario(&cadastro);
+            // cadastro.funcionarios[0].salario = novoSalario;
+            break;
         default:
             break;
         }
@@ -152,7 +158,7 @@ TipoCadastro LeFuncionarios(TipoCadastro atual)
     int qtdFuncionarios;
     cursorVisivel(true);
     gotoxy(3, 5);
-    printf("Quantidade de funcionários a serem cadastrados: ");
+    printf("Quantidade de funcion?rios a serem cadastrados: ");
     fgets(numStr, sizeof numStr, stdin);
     qtdFuncionarios = atoi(numStr);
 
@@ -184,7 +190,7 @@ TipoCadastro LeFuncionarios(TipoCadastro atual)
         novoFuncionario.idade = atoi(numStr);
 
         gotoxy(3, 11);
-        printf("Gï¿½nero (m/f/n/o): ");
+        printf("Gênero (m/f/n/o): ");
         novoFuncionario.sexo = fgetc(stdin);
 
         gotoxy(3, 12);
@@ -195,7 +201,7 @@ TipoCadastro LeFuncionarios(TipoCadastro atual)
         fgets(numStr, sizeof numStr, stdin);
         novoFuncionario.dataNascimento.dia = atoi(numStr);
         gotoxy(5, 14);
-        printf("Mï¿½s: ");
+        printf("Mês: ");
         fgets(numStr, sizeof numStr, stdin);
         novoFuncionario.dataNascimento.mes = atoi(numStr);
         gotoxy(5, 15);
@@ -362,7 +368,7 @@ void InicioSalarioIntervalo(TipoCadastro cadastro)
     system("cls");
 
     gotoxy(3, 3);
-    printf("Intervalo de salários");
+    printf("Intervalo de sal?rios");
 
     char numStr[LIMITE_NUM];
     int v1;
@@ -430,12 +436,12 @@ void CalculaImposto(TipoCadastro cadastro)
     }
 
     gotoxy(3, 3);
-    printf("CÁLCULO DE IMPOSTO");
+    printf("C?LCULO DE IMPOSTO");
 
     char *p;
     char nome[LIMITE_STRING + 1] = {0};
     gotoxy(3, 5);
-    printf("Insira o nome que será buscado: ");
+    printf("Insira o nome que ser? buscado: ");
     fgets(nome, LIMITE_STRING, stdin);
     p = strchr(nome, '\n');
     if (p)
@@ -457,7 +463,7 @@ void CalculaImposto(TipoCadastro cadastro)
     if (!encontrou)
     {
         gotoxy(3, 7);
-        printf("Funcionário não encontrado...");
+        printf("Funcion?rio n?o encontrado...");
 
         gotoxy(3, 28);
         system("pause");
@@ -468,7 +474,7 @@ void CalculaImposto(TipoCadastro cadastro)
     if (registro.salario < 1000)
     {
         gotoxy(3, 7);
-        printf("O valor do salário não prevê pagamento de imposto...");
+        printf("O valor do sal?rio n?o prev? pagamento de imposto...");
 
         gotoxy(3, 28);
         system("pause");
@@ -577,6 +583,85 @@ TipoReg BuscaNome(TipoCadastro lista, const char *nome)
 
     TipoReg vazio;
     strcpy(vazio.nome, "");
+    return vazio;
+}
+
+double InicioAtualizaSalario(TipoCadastro *cadastro)
+{
+    if ((*cadastro).quant == 0)
+    {
+        gotoxy(3, 3);
+        printf("Lista vazia...");
+
+        gotoxy(3, 28);
+        system("pause");
+
+        return 0;
+    }
+
+    system("cls");
+
+    gotoxy(3, 3);
+    printf("ATUALIZAÇÃO DE SALÁRIO");
+
+    char *p;
+    char rg[LIMITE_RG];
+    gotoxy(3, 5);
+    printf("Insira o RG do funcionário que terá o salário atualizado: ");
+    fgets(rg, LIMITE_STRING, stdin);
+    p = strchr(rg, '\n');
+    if (p)
+        *p = 0;
+
+    TipoReg registro;
+    int indice = -1;
+
+    registro = BuscaRG(*cadastro, rg, &indice);
+
+    if (indice == -1)
+    {
+        gotoxy(3, 7);
+        printf("Funcionário não encontrado...");
+
+        gotoxy(3, 28);
+        system("pause");
+
+        return 0;
+    }
+
+    gotoxy(3, 7);
+    printf("Funcionário: %s", registro.nome);
+
+    double novoSalario;
+    char numStr[LIMITE_NUM];
+    gotoxy(3, 10);
+    printf("Novo salário: ");
+    fgets(numStr, sizeof numStr, stdin);
+    novoSalario = atof(numStr);
+
+    (*cadastro).funcionarios[indice].salario = novoSalario;
+
+    gotoxy(3, 13);
+    printf("Salário atualizado com sucesso!");
+
+    gotoxy(3, 28);
+    system("pause");
+    return novoSalario;
+}
+
+TipoReg BuscaRG(TipoCadastro lista, const char *rg, int *indiceEncontrado)
+{
+    for (int i = 0; i < lista.quant; i++)
+    {
+        if (strcmp(rg, lista.funcionarios[i].rg) == 0)
+        {
+            *indiceEncontrado = i;
+            return lista.funcionarios[i];
+        }
+    }
+
+    TipoReg vazio;
+    strcpy(vazio.rg, "");
     return vazio;
 }
 
