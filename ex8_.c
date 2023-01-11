@@ -11,7 +11,7 @@
 #define LIMITE_FUNC 100
 #define LIMITE_RG 40
 #define LIMITE_NUM 10
-#define QTD_MENU 9
+#define QTD_MENU 10
 
 typedef struct
 {
@@ -50,6 +50,8 @@ void InicioAtualizaSalario(TipoCadastro *cadastro);
 TipoReg BuscaRG(TipoCadastro lista, const char *rg, int *indiceEncontrado);
 void InicioBuscaMaraja(TipoCadastro cadastro);
 TipoReg ListaMaraja(TipoCadastro cadastro);
+void InicioRemoveFuncionario(TipoCadastro *cadastro);
+bool RemoveFuncionario(TipoCadastro *cadastro, const char *rg);
 void limpaBuffer();
 
 int main(void)
@@ -66,7 +68,8 @@ int main(void)
         "Cálculo de impostos",
         "Busca por nome",
         "Atualização de salário",
-        "Maior salário"};
+        "Maior salário",
+        "Remove funcionário"};
     int dec;
 
     // dados para teste//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -150,6 +153,8 @@ int main(void)
         case 8:
             InicioBuscaMaraja(cadastro);
             break;
+        case 9:
+            InicioRemoveFuncionario(&cadastro);
         default:
             break;
         }
@@ -735,6 +740,76 @@ TipoReg ListaMaraja(TipoCadastro cadastro)
     }
 
     return funcResult;
+}
+
+void InicioRemoveFuncionario(TipoCadastro *cadastro)
+{
+    if ((*cadastro).quant == 0)
+    {
+        gotoxy(3, 3);
+        printf("Lista vazia...");
+
+        gotoxy(3, 28);
+        system("pause");
+
+        return;
+    }
+
+    system("cls");
+
+    gotoxy(3, 3);
+    printf("REMOÇÃO DE FUNCIONÁRIO");
+
+    char *p;
+    char rg[LIMITE_RG];
+    gotoxy(3, 5);
+    printf("Insira o RG do funcionário que será excluído: ");
+    fgets(rg, LIMITE_STRING, stdin);
+    p = strchr(rg, '\n');
+    if (p)
+        *p = 0;
+
+    if (!RemoveFuncionario(cadastro, rg))
+    {
+        gotoxy(3, 7);
+        printf("Funcionário não encontrado...");
+
+        gotoxy(3, 28);
+        system("pause");
+
+        return;
+    }
+
+    gotoxy(3, 7);
+    printf("Funcionário removido com sucesso!");
+
+    gotoxy(3, 28);
+    system("pause");
+
+    return;
+}
+
+bool RemoveFuncionario(TipoCadastro *cadastro, const char *rg)
+{
+    TipoReg empty;
+
+    for (int i = 0; i < (*cadastro).quant; i++)
+    {
+        if (strcmp(rg, (*cadastro).funcionarios[i].rg) == 0)
+        {
+
+            for (i; i < (*cadastro).quant - 1; i++)
+            {
+                (*cadastro).funcionarios[i] = (*cadastro).funcionarios[i + 1];
+            }
+
+            (*cadastro).funcionarios[i] = empty;
+            (*cadastro).quant -= 1;
+            return true;
+        }
+    }
+
+    return false;
 }
 
 void limpaBuffer()
