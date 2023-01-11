@@ -11,7 +11,7 @@
 #define LIMITE_FUNC 100
 #define LIMITE_RG 40
 #define LIMITE_NUM 10
-#define QTD_MENU 8
+#define QTD_MENU 9
 
 typedef struct
 {
@@ -46,8 +46,10 @@ void SalarioIntervalo(TipoCadastro cadastro, double v1, double v2);
 void CalculaImposto(TipoCadastro cadastro);
 void InicioBuscaNome(TipoCadastro cadastro);
 TipoReg BuscaNome(TipoCadastro lista, const char *nome);
-double InicioAtualizaSalario(TipoCadastro *cadastro);
+void InicioAtualizaSalario(TipoCadastro *cadastro);
 TipoReg BuscaRG(TipoCadastro lista, const char *rg, int *indiceEncontrado);
+void InicioBuscaMaraja(TipoCadastro cadastro);
+TipoReg ListaMaraja(TipoCadastro cadastro);
 void limpaBuffer();
 
 int main(void)
@@ -55,7 +57,16 @@ int main(void)
     TipoCadastro cadastro = IniciaCadastro();
     setlocale(LC_ALL, "Portuguese");
 
-    char *menu[QTD_MENU] = {"Cadastro", "Listagem", "Ordenar por nome", "Ordenar por salário", "Intervalo de salários", "Cálculo de impostos", "Busca por nome", "Atualização de salário"};
+    char *menu[QTD_MENU] = {
+        "Cadastro",
+        "Listagem",
+        "Ordenar por nome",
+        "Ordenar por salário",
+        "Intervalo de salários",
+        "Cálculo de impostos",
+        "Busca por nome",
+        "Atualização de salário",
+        "Maior salário"};
     int dec;
 
     // dados para teste//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -134,8 +145,10 @@ int main(void)
             InicioBuscaNome(cadastro);
             break;
         case 7:
-            double novoSalario = InicioAtualizaSalario(&cadastro);
-            // cadastro.funcionarios[0].salario = novoSalario;
+            InicioAtualizaSalario(&cadastro);
+            break;
+        case 8:
+            InicioBuscaMaraja(cadastro);
             break;
         default:
             break;
@@ -586,7 +599,7 @@ TipoReg BuscaNome(TipoCadastro lista, const char *nome)
     return vazio;
 }
 
-double InicioAtualizaSalario(TipoCadastro *cadastro)
+void InicioAtualizaSalario(TipoCadastro *cadastro)
 {
     if ((*cadastro).quant == 0)
     {
@@ -596,7 +609,7 @@ double InicioAtualizaSalario(TipoCadastro *cadastro)
         gotoxy(3, 28);
         system("pause");
 
-        return 0;
+        return;
     }
 
     system("cls");
@@ -626,7 +639,7 @@ double InicioAtualizaSalario(TipoCadastro *cadastro)
         gotoxy(3, 28);
         system("pause");
 
-        return 0;
+        return;
     }
 
     gotoxy(3, 7);
@@ -646,7 +659,6 @@ double InicioAtualizaSalario(TipoCadastro *cadastro)
 
     gotoxy(3, 28);
     system("pause");
-    return novoSalario;
 }
 
 TipoReg BuscaRG(TipoCadastro lista, const char *rg, int *indiceEncontrado)
@@ -663,6 +675,66 @@ TipoReg BuscaRG(TipoCadastro lista, const char *rg, int *indiceEncontrado)
     TipoReg vazio;
     strcpy(vazio.rg, "");
     return vazio;
+}
+
+void InicioBuscaMaraja(TipoCadastro cadastro)
+{
+    if (cadastro.quant == 0)
+    {
+        gotoxy(3, 3);
+        printf("Lista vazia...");
+
+        gotoxy(3, 28);
+        system("pause");
+
+        return;
+    }
+
+    gotoxy(3, 3);
+    printf("MAIOR SALÁRIO");
+
+    TipoReg registro = ListaMaraja(cadastro);
+
+    gotoxy(3, 7);
+    printf("Nome do funcionário: %s", registro.nome);
+
+    gotoxy(3, 8);
+    printf("RG: %s", registro.rg);
+
+    gotoxy(3, 9);
+    printf("Salário: R$%.2lf", registro.salario);
+
+    gotoxy(3, 10);
+    printf("Idade: %d anos", registro.idade);
+
+    gotoxy(3, 11);
+    printf("Gênero: %c", registro.sexo);
+
+    gotoxy(3, 12);
+    printf("%02d/%02d/%04d",
+           registro.dataNascimento.dia,
+           registro.dataNascimento.mes,
+           registro.dataNascimento.ano);
+
+    gotoxy(3, 28);
+    system("pause");
+}
+
+TipoReg ListaMaraja(TipoCadastro cadastro)
+{
+    TipoReg funcResult;
+    double salarioResult = -1;
+
+    for (int i = 0; i < cadastro.quant; i++)
+    {
+        if (cadastro.funcionarios[i].salario > salarioResult)
+        {
+            salarioResult = cadastro.funcionarios[i].salario;
+            funcResult = cadastro.funcionarios[i];
+        }
+    }
+
+    return funcResult;
 }
 
 void limpaBuffer()
