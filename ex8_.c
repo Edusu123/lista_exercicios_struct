@@ -11,7 +11,7 @@
 #define LIMITE_FUNC 100
 #define LIMITE_RG 40
 #define LIMITE_NUM 10
-#define QTD_MENU 11
+#define QTD_MENU 12
 
 typedef struct
 {
@@ -54,6 +54,8 @@ void InicioRemoveFuncionario(TipoCadastro *cadastro);
 bool RemoveFuncionario(TipoCadastro *cadastro, const char *rg);
 void InicioListaAniversarioMes(TipoCadastro cadastro);
 void ListaAniversarioMes(TipoCadastro cadastro, int mes);
+void InicioFiltraTudo(TipoCadastro cadastro);
+void ListaAniversarioSexo(TipoCadastro cadastro, int dia, int mes, int ano, char sexo);
 void limpaBuffer();
 
 int main(void)
@@ -72,7 +74,8 @@ int main(void)
         "Atualização de salário",
         "Maior salário",
         "Remove funcionário",
-        "Lista aniversariantes do mês"};
+        "Lista aniversariantes do mês",
+        "Filtragem por aniversário e sexo"};
     int dec;
 
     // dados para teste//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -158,8 +161,13 @@ int main(void)
             break;
         case 9:
             InicioRemoveFuncionario(&cadastro);
+            break;
         case 10:
             InicioListaAniversarioMes(cadastro);
+            break;
+        case 11:
+            InicioFiltraTudo(cadastro);
+            break;
         default:
             break;
         }
@@ -861,8 +869,98 @@ void ListaAniversarioMes(TipoCadastro cadastro, int mes)
         }
     }
 
+    if (filtrada.quant == 0)
+    {
+        gotoxy(3, 3);
+        printf("Lista vazia...");
+
+        gotoxy(3, 28);
+        system("pause");
+
+        return;
+    }
+
     system("cls");
     ListaFuncionarios(filtrada, "Funcionários que fazem aniversário nesse mês");
+}
+
+void InicioFiltraTudo(TipoCadastro cadastro)
+{
+    if (cadastro.quant == 0)
+    {
+        gotoxy(3, 3);
+        printf("Lista vazia...");
+
+        gotoxy(3, 28);
+        system("pause");
+
+        return;
+    }
+
+    system("cls");
+
+    gotoxy(3, 3);
+    printf("LISTA DE FILTRAGEM GERAL");
+
+    char numStr[LIMITE_NUM];
+    int dia;
+    gotoxy(3, 5);
+    printf("Dia: ");
+    fgets(numStr, sizeof numStr, stdin);
+    dia = atof(numStr);
+
+    numStr[LIMITE_NUM];
+    int mes;
+    gotoxy(3, 7);
+    printf("Mês: ");
+    fgets(numStr, sizeof numStr, stdin);
+    mes = atof(numStr);
+
+    numStr[LIMITE_NUM];
+    int ano;
+    gotoxy(3, 9);
+    printf("Ano: ");
+    fgets(numStr, sizeof numStr, stdin);
+    ano = atof(numStr);
+
+    char sexo;
+    gotoxy(3, 11);
+    printf("Sexo (m/f): ");
+    sexo = fgetc(stdin);
+
+    ListaAniversarioSexo(cadastro, dia, mes, ano, sexo);
+}
+
+void ListaAniversarioSexo(TipoCadastro cadastro, int dia, int mes, int ano, char sexo)
+{
+    TipoCadastro filtrada;
+    filtrada.quant = 0;
+
+    for (int i = 0; i < cadastro.quant; i++)
+    {
+        if (cadastro.funcionarios[i].dataNascimento.dia == dia &&
+            cadastro.funcionarios[i].dataNascimento.mes == mes &&
+            cadastro.funcionarios[i].dataNascimento.ano == ano &&
+            cadastro.funcionarios[i].sexo == sexo)
+        {
+            filtrada.funcionarios[filtrada.quant] = cadastro.funcionarios[i];
+            filtrada.quant++;
+        }
+    }
+
+    if (filtrada.quant == 0)
+    {
+        gotoxy(3, 3);
+        printf("Lista vazia...");
+
+        gotoxy(3, 28);
+        system("pause");
+
+        return;
+    }
+
+    system("cls");
+    ListaFuncionarios(filtrada, "Funcionários filtrados");
 }
 
 void limpaBuffer()
